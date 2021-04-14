@@ -22,5 +22,5 @@ void PassengerGateway::CheckRide(int from, int to, CarTypes type)
 
 void PassengerGateway::OrderRide(int from, int to, CarTypes type)
 {
-
+	DBShell::OrderRide(this->passenger, DBShell::findDriver(type), from, to, type);
 }

@@ -19,6 +19,8 @@ int main()
     pg->CheckRide(10, 2, Economy);
 
     Driver* d = DBShell::findDriver(Economy);
+
+    pg->OrderRide(-1, 12, Economy);
     
 
     cout << "!";

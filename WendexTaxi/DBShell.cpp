@@ -1,6 +1,7 @@
 #include "DBShell.h"
 #include "sqlite/sqlite3.h"
 #include <iostream>
+#include <chrono>
 using namespace std;
 const char* path = "WendexTaxiDB.db";
 
@@ -167,8 +168,32 @@ void DBShell::GetCar(string Number)
 	else {
 		cout << "There's no Car " << c->Number << " in the system!" << endl;
 	}
-	sqlite3_finalize(stmt);
+	
 	sqlite3_close(db);
-
+	sqlite3_finalize(stmt);
 	//return c;
+}
+
+void DBShell::OrderRide(Passenger* p, Driver* d, int from, int to, CarTypes type)
+{
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	char* er;
+	sqlite3_stmt* stmt;
+	string query = "INSERT INTO Orders "
+	"('PassengerID', 'DriverID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
+	" VALUES("+to_string(p->ID)+", "+ to_string(d->ID) +", "+ to_string(type) +", "+ to_string(from) 
+		+", "+ to_string(to) +", "+to_string(std::chrono::system_clock::now().time_since_epoch().count())+");";
+
+	exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
+	if (exit != SQLITE_OK) {
+		cerr << "Error upd "<<endl;
+		sqlite3_free(er);
+	}
+
+	//sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+	//sqlite3_step(stmt);
+
+	//sqlite3_finalize(stmt);
+	sqlite3_close(db);
 }

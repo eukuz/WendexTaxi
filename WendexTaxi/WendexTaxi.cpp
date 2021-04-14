@@ -12,6 +12,10 @@ int main()
     PassengerGateway* pg = new PassengerGateway();
     dg->Login("Dave");
     pg->Login("Peter");
+    pg->PrintOrderHistory();
+    //dg->Move(5);
+    
+
     cout << "!";
 }
 

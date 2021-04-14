@@ -7,6 +7,7 @@ class PassengerGateway
 public:
 	void Login(string Name);
 	Passenger* passenger;
-
+	void PrintOrderHistory();
+	//void AddPaymentMethod
 };
 

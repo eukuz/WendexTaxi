@@ -10,5 +10,7 @@ public:
     int X;
     string Color;
     string Number;
-	 
+	
+    Car(int id, string model, int cartypeid, int x, string color, string number)
+        :ID(id), Model(model), CarTypeID(cartypeid), X(x), Color(color), Number(number) {};
 };

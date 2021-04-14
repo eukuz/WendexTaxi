@@ -157,6 +157,7 @@
     <ClInclude Include="DBShell.h" />
     <ClInclude Include="Driver.h" />
     <ClInclude Include="DriverGateway.h" />
+    <ClInclude Include="Enums.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="Passenger.h" />
     <ClInclude Include="PassengerGateway.h" />

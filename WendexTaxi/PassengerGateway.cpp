@@ -1,5 +1,7 @@
 #include "PassengerGateway.h"
 #include "DBShell.h"
+#include <iostream>
+#include "Enums.h"
 
 
 void PassengerGateway::Login(string Name)
@@ -10,4 +12,10 @@ void PassengerGateway::Login(string Name)
 void PassengerGateway::PrintOrderHistory()
 {
 	DBShell::PrintOrders(this->passenger);
+}
+
+void PassengerGateway::CheckRide(int from, int to, CarTypes type)
+{
+	int distance = from > to ? from - to : to - from;
+	cout << "Time :" << distance << " Price: " <<  distance*type;
 }

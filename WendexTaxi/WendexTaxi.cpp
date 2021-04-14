@@ -5,6 +5,7 @@
 #include "DBShell.h"
 #include "DriverGateway.h"
 #include "PassengerGateway.h"
+#include "Enums.h"
 
 int main()
 {
@@ -14,6 +15,7 @@ int main()
     pg->Login("Peter");
     pg->PrintOrderHistory();
     dg->Move(9);
+    pg->CheckRide(0, 10, Business);
     
 
     cout << "!";

@@ -139,9 +139,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Car.cpp" />
+    <ClCompile Include="Driver.cpp" />
+    <ClCompile Include="Passenger.cpp" />
+    <ClCompile Include="PaymentMethod.cpp" />
+    <ClCompile Include="PinnedAddress.cpp" />
     <ClCompile Include="sqlite\shell.c" />
     <ClCompile Include="sqlite\sqlite3.c" />
     <ClCompile Include="WendexTaxi.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Car.h" />
+    <ClInclude Include="Driver.h" />
+    <ClInclude Include="Passenger.h" />
+    <ClInclude Include="PaymentMethod.h" />
+    <ClInclude Include="PinnedAddress.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

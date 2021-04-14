@@ -27,6 +27,7 @@ Passenger* DBShell::getPassenger(string Name)
 	}
 
 	sqlite3_close(db);
+	sqlite3_finalize(stmt);
 
 	return p;
 }
@@ -56,6 +57,8 @@ Driver* DBShell::getDriver(string Name)
 	}
 
 	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
 
 	return d;
 }
@@ -65,26 +68,28 @@ void DBShell::MoveDriver(Driver* driver,int x) //not working?? db's locked!!
 	sqlite3* db;
 	char* er;
 	int exit = sqlite3_open(path, &db);
-	//sqlite3_stmt* stmt;
+	sqlite3_stmt* stmt;
 	
 	
 	string query = " UPDATE Cars SET X = '"+to_string(x)+"' WHERE ID = '"+ to_string(driver->CarID)+"'";
 	
-	//cout << query;
-	//sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
-	//sqlite3_step(stmt);
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
 
-	//cout << driver->Name << " moved to X= " << x;
-	//	
-	//sqlite3_close(db);
+	cout << driver->Name << " moved to X= " << x << endl;;
+		
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
 
-	exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
+	/*exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
 	if (exit != SQLITE_OK) {
 		cerr << "Error upd "<<endl;
 		sqlite3_free(er);
-	}else
-		cout << driver->Name << " moved to X= " << x;
+	}else*/
 
+	//cout << driver->Name << " moved to X= " << x;
+	//
+	//sqlite3_close(db);
 	//GetCar("123");
 }
 
@@ -109,7 +114,10 @@ void DBShell::PrintOrders(Passenger* passenger)
 			<< " Car type: "<< sqlite3_column_text(stmt, 4)
 			<< endl;
 	}
+	
 	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
 }
 
 void DBShell::GetCar(string Number)
@@ -135,6 +143,7 @@ void DBShell::GetCar(string Number)
 	else {
 		cout << "There's no Car " << c->Number << " in the system!" << endl;
 	}
+	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 
 	//return c;

@@ -13,7 +13,7 @@ int main()
     dg->Login("Dave");
     pg->Login("Peter");
     pg->PrintOrderHistory();
-    //dg->Move(5);
+    dg->Move(9);
     
 
     cout << "!";

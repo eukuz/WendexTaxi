@@ -140,9 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
+    <ClCompile Include="DBShell.cpp" />
     <ClCompile Include="Driver.cpp" />
+    <ClCompile Include="DriverGateway.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="Passenger.cpp" />
+    <ClCompile Include="PassengerGateway.cpp" />
     <ClCompile Include="PaymentMethod.cpp" />
     <ClCompile Include="PinnedAddress.cpp" />
     <ClCompile Include="sqlite\shell.c" />
@@ -151,9 +154,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />
+    <ClInclude Include="DBShell.h" />
     <ClInclude Include="Driver.h" />
+    <ClInclude Include="DriverGateway.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="Passenger.h" />
+    <ClInclude Include="PassengerGateway.h" />
     <ClInclude Include="PaymentMethod.h" />
     <ClInclude Include="PinnedAddress.h" />
   </ItemGroup>

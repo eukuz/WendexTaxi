@@ -2,9 +2,16 @@
 //
 
 #include <iostream>
+#include "DBShell.h"
+#include "DriverGateway.h"
+#include "PassengerGateway.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    DriverGateway* dg = new DriverGateway();
+    PassengerGateway* pg = new PassengerGateway();
+    dg->Login("Dave");
+    pg->Login("Peter");
+    cout << "!";
 }
 

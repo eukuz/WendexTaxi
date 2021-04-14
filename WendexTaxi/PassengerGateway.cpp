@@ -11,7 +11,7 @@ void PassengerGateway::Login(string Name)
 
 void PassengerGateway::PrintOrderHistory()
 {
-	DBShell::PrintOrders(this->passenger);
+	DBShell::PrintOrdersP(this->passenger);
 }
 
 void PassengerGateway::CheckRide(int from, int to, CarTypes type)

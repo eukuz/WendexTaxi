@@ -10,3 +10,8 @@ void DriverGateway::Move(int x)
 {
 	DBShell::MoveDriver(this->driver,x);
 }
+
+void DriverGateway::PrintOrderHistory()
+{
+	DBShell::PrintOrdersD(this->driver);
+}

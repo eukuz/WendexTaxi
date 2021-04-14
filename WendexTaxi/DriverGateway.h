@@ -8,5 +8,6 @@ public:
 	void Login(string Name);
 	void Move(int x);
 	Driver* driver;
+	void PrintOrderHistory();
 };
 

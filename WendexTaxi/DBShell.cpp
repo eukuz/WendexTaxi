@@ -1,7 +1,8 @@
 #include "DBShell.h"
 #include "sqlite/sqlite3.h"
 #include <iostream>
-#include <chrono>
+
+#pragma warning(disable : 4996)
 using namespace std;
 const char* path = "WendexTaxiDB.db";
 
@@ -118,7 +119,7 @@ void DBShell::MoveDriver(Driver* driver,int x) //not working?? db's locked!!
 	//GetCar("123");
 }
 
-void DBShell::PrintOrders(Passenger* passenger)
+void DBShell::PrintOrdersP(Passenger* passenger)
 {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
@@ -132,9 +133,10 @@ void DBShell::PrintOrders(Passenger* passenger)
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
 	while (sqlite3_step(stmt) != SQLITE_DONE) {
-		cout << "From: "<< sqlite3_column_int(stmt, 0) 
-			<< " To:  "<<sqlite3_column_int(stmt, 1)
-			<< " At (unix time): "<< sqlite3_column_int(stmt, 2) 
+		time_t temp = sqlite3_column_int(stmt, 2);
+		cout << "From: " << sqlite3_column_int(stmt, 0)
+			<< " To:  " << sqlite3_column_int(stmt, 1)
+			<< " At : " << std::asctime(localtime(&temp))
 			<< " Driver: "<< sqlite3_column_text(stmt, 3)
 			<< " Car type: "<< sqlite3_column_text(stmt, 4)
 			<< endl;
@@ -144,6 +146,36 @@ void DBShell::PrintOrders(Passenger* passenger)
 	sqlite3_finalize(stmt);
 
 }
+
+void DBShell::PrintOrdersD(Driver* driver)
+{
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT Orders.FromX, Orders.ToX, Orders.UnixTime, Passengers.Name, CarTypes.Type "
+		" FROM Orders "
+		" INNER JOIN Drivers ON Orders.DriverID = Drivers.ID, "
+		" CarTypes ON Orders.CarTypeID = CarTypes.ID,  "
+		" Passengers ON Orders.PassengerId = Passengers.ID"
+		" WHERE Orders.DriverID = " + to_string(driver->ID);
+	cout << driver->Name << "'s orders:" << endl;
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+	
+	while (sqlite3_step(stmt) != SQLITE_DONE) {
+		time_t temp = sqlite3_column_int(stmt, 2);
+		cout << "From: " << sqlite3_column_int(stmt, 0)
+			<< " To:  " << sqlite3_column_int(stmt, 1)
+			<< " At : " << std::asctime(localtime(&temp))
+			<< " Passenger: " << sqlite3_column_text(stmt, 3)
+			<< " Car type: " << sqlite3_column_text(stmt, 4)
+			<< endl;
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+}
+
 
 void DBShell::GetCar(string Number)
 {
@@ -183,17 +215,17 @@ void DBShell::OrderRide(Passenger* p, Driver* d, int from, int to, CarTypes type
 	string query = "INSERT INTO Orders "
 	"('PassengerID', 'DriverID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
 	" VALUES("+to_string(p->ID)+", "+ to_string(d->ID) +", "+ to_string(type) +", "+ to_string(from) 
-		+", "+ to_string(to) +", "+to_string(std::chrono::system_clock::now().time_since_epoch().count())+");";
+		+", "+ to_string(to) +", "+to_string(std::time(0))+");";
 
-	exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
-	if (exit != SQLITE_OK) {
-		cerr << "Error upd "<<endl;
-		sqlite3_free(er);
-	}
+	//exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
+	//if (exit != SQLITE_OK) {
+	//	cerr << "Error upd "<<endl;
+	//	sqlite3_free(er);
+	//}
 
-	//sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
-	//sqlite3_step(stmt);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
 
-	//sqlite3_finalize(stmt);
+	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 }

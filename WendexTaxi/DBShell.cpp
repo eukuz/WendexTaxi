@@ -20,7 +20,7 @@ Passenger* DBShell::getPassenger(string Name)
 			sqlite3_column_int(stmt, 0),
 			string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1))),
 			sqlite3_column_double(stmt, 2));
-		cout << p->Name << " " << "Logged!" << endl;
+		cout <<"Passenger "<< p->Name << " !" << endl;
 	}
 	else {
 		cout << "There's no Passenger "<<p->Name << " in the system!" << endl;
@@ -50,10 +50,34 @@ Driver* DBShell::getDriver(string Name)
 			sqlite3_column_int(stmt, 3),
 			sqlite3_column_int(stmt, 4),
 			sqlite3_column_double(stmt, 5));
-		cout << d->Name << " " << "Logged!" << endl;
+		cout << "Driver "<<d->Name << " !" << endl;
 	}
 	else {
 		cout << "There's no Driver " << d->Name << " in the system!" << endl;
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+
+	return d;
+}
+
+Driver* DBShell::findDriver(CarTypes type)
+{
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " Select Drivers.Name FROM Drivers INNER JOIN Cars on Drivers.CarID = Cars.ID where Cars.CarTypeID = " + to_string(type);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	Driver* d = NULL;
+	if (sqlite3_step(stmt) != SQLITE_DONE)
+	{
+		d = getDriver(string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0))));
+	}
+	else {
+		cout << "There's no such a type od car now" << d->Name << " in the system!" << endl;
 	}
 
 	sqlite3_close(db);

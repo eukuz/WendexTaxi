@@ -14,8 +14,11 @@ int main()
     dg->Login("Dave");
     pg->Login("Peter");
     pg->PrintOrderHistory();
-    dg->Move(9);
+
     pg->CheckRide(0, 10, Business);
+    pg->CheckRide(10, 2, Economy);
+
+    Driver* d = DBShell::findDriver(Economy);
     
 
     cout << "!";

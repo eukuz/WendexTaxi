@@ -15,6 +15,8 @@ int main()
     PassengerGateway* pg = new PassengerGateway();
     dg->Login("Dave");
     pg->Login("Peter");
+
+
     /*pg->PrintOrderHistory();
     
 
@@ -45,9 +47,11 @@ int main()
 
     pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0],&pays[2]));*/
 
-    pg->PrintOrderHistory();
+ /*   pg->PrintOrderHistory();
     int bill = pg->GetBill(2);
-    
+    */
+
+    Car* car = dg->GetMyCar();
     
     
     cout << "!";

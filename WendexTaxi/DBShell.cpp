@@ -182,12 +182,12 @@ void DBShell::PrintOrdersD(Driver* driver)
 }
 
 
-void DBShell::GetCar(string Number)
+Car* DBShell::GetCar(int carId)
 {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = "SELECT * FROM Cars WHERE Number = '" + Number + "'";
+	string query = "SELECT * FROM Cars WHERE ID = " + to_string(carId);
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
 	Car* c = NULL;
@@ -200,14 +200,14 @@ void DBShell::GetCar(string Number)
 			sqlite3_column_int(stmt, 3),
 			string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4))),
 			string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5))));
-		cout << c->Number << " Ar " << c->X << endl;
 	}
 	else {
-		cout << "There's no Car " << c->Number << " in the system!" << endl;
+		cout << "There's no Car with the id= " << carId << " in the system!" << endl;
 	}
 	
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
+	return c;
 }
 
 int DBShell::GetPassengerCoordinates(Passenger* p) {

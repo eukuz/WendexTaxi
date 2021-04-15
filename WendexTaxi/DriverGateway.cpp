@@ -26,6 +26,11 @@ void DriverGateway::FinishRide(Order* order)
 	DBShell::FinishRide(this->driver, order);
 }
 
+Car* DriverGateway::GetMyCar()
+{
+	return DBShell::GetCar(this->driver->CarID);
+}
+
 vector<Order*> DriverGateway::GetOrdersAvailable()
 {
 	return DBShell::GetOrders(this->driver);

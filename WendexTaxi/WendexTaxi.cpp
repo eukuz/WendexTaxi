@@ -25,17 +25,24 @@ int main()
     int from = 1, to = 7;
 
     //pg->OrderRide(from, to, Economy);
-    //dg->driver = d;
-    //for (int i = from; i <= to; i++)
-    //{
-    //    //driver set is in ride (order)
-    //    dg->Move(i);
-    //    //
-    //    pg->WhereAmI();
-    //    //driver set finished ride (order)
-    //}
-    dg->PrintOrderHistory();
+
     vector<Order*> av = dg->GetOrdersAvailable();
+
+    dg->driver = d;
+    dg->StartRide(av.at(0));
+    for (int i = from; i <= to; i++)
+    {
+      
+        dg->Move(i);
+        //
+        pg->WhereAmI();
+        //driver set finished ride (order)
+    }
+    
+    dg->FinishRide(av.at(0));
+
+    dg->PrintOrderHistory();
+   
     
     
     

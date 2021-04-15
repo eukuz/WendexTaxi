@@ -16,12 +16,14 @@ void DriverGateway::PrintOrderHistory()
 	DBShell::PrintOrdersD(this->driver);
 }
 
-void DriverGateway::StartRide(Order order)
+void DriverGateway::StartRide(Order* order)
 {
+	DBShell::StartRide(this->driver, order);
 }
 
-void DriverGateway::FinishRide(Order order)
+void DriverGateway::FinishRide(Order* order)
 {
+	DBShell::FinishRide(this->driver, order);
 }
 
 vector<Order*> DriverGateway::GetOrdersAvailable()

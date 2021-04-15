@@ -11,8 +11,8 @@ public:
 	void Move(int x);
 	Driver* driver;
 	void PrintOrderHistory();
-	void StartRide(Order order);
-	void FinishRide(Order order);
+	void StartRide(Order* order);
+	void FinishRide(Order* order);
 	vector<Order*> GetOrdersAvailable();
 };
 

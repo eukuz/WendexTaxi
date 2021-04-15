@@ -257,6 +257,66 @@ vector <Order*> DBShell::GetOrders(Driver* d)
 	return orders;
 }
 
+
+void UpdateOrderStatus(int driverID, Order* o,OrderStatus status) {
+	sqlite3* db;
+	char* er;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "UPDATE ORDERS Set Status = " + to_string(status)
+		+ ", DriverID = " + to_string(driverID) + " WHERE ID = " + to_string(o->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
+void DBShell::UpdateDriverStatus(Driver* d, DriverStatus status) {
+
+	sqlite3* db;
+	char* er;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query;
+
+	switch (status)
+	{
+	case NotRiding:
+		query = "UPDATE Drivers Set IsRiding = 0 WHERE ID = "+to_string(d->ID);
+		break;
+	case IsRiding:
+		query = "UPDATE Drivers Set IsRiding = 1 WHERE ID = " + to_string(d->ID);
+		break;
+	case NotWorking:
+		query = "UPDATE Drivers Set IsWorking = 0 WHERE ID = "+to_string(d->ID);
+		break;
+	case IsWorking:
+		query = "UPDATE Drivers Set IsWorking = 1 WHERE ID = " + to_string(d->ID);
+		break;
+	}
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+	
+}
+
+void DBShell::StartRide(Driver* d, Order* o)
+{
+	UpdateDriverStatus(d, IsRiding);
+	UpdateOrderStatus(d->ID, o, InProccess);
+}
+
+void DBShell::FinishRide(Driver* d, Order* o)
+{
+	UpdateDriverStatus(d, NotRiding);
+	UpdateOrderStatus(d->ID, o, Finished);
+}
+
 int getDriversCarType(Driver* d) {
 	int carType = NULL;
 	sqlite3* db;
@@ -276,15 +336,15 @@ int getDriversCarType(Driver* d) {
 	return carType;
 }
 
-void DBShell::OrderRide(Passenger* p, Driver* d, int from, int to, CarTypes type)
+void DBShell::OrderRide(Passenger* p, int from, int to, CarTypes type)
 {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	char* er;
 	sqlite3_stmt* stmt;
 	string query = "INSERT INTO Orders "
-	"('PassengerID', 'DriverID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
-	" VALUES("+to_string(p->ID)+", "+ to_string(d->ID) +", "+ to_string(type) +", "+ to_string(from) 
+	"('PassengerID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
+	" VALUES("+to_string(p->ID)+", "+ to_string(type) +", "+ to_string(from) 
 		+", "+ to_string(to) +", "+to_string(std::time(0))+");";
 
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);

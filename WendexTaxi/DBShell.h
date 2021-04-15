@@ -25,5 +25,6 @@ public:
 	static void FinishRide(Driver* d,Order* o);
 	static vector <PaymentMethod*> GetListOfPayments();
 	static void SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments);
+	static Order* GetOrderByID(int orderID);
 };
 

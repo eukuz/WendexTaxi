@@ -14,16 +14,24 @@ void PassengerGateway::PrintOrderHistory()
 	DBShell::PrintOrdersP(this->passenger);
 }
 
-void PassengerGateway::CheckRide(int from, int to, CarTypes type)
+int PassengerGateway::CheckRide(int from, int to, CarTypes type)
 {
-	int distance = from > to ? from - to : to - from;
+	int distance = from > to ? from - to : to - from, price = distance * type;
+
 	cout << "Time :" << distance << " Price: " <<  distance*type<<endl;
+	return price;
 }
 
 void PassengerGateway::OrderRide(int from, int to, CarTypes type)
 {
 	DBShell::OrderRide(this->passenger, from, to, type);
 
+}
+
+int PassengerGateway::GetBill(int orderId)
+{
+	Order* order = DBShell::GetOrderByID(orderId);
+	return CheckRide(order->FromX, order->ToX, order->CarType);
 }
 
 void PassengerGateway::WhereAmI()

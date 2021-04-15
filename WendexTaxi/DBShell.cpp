@@ -128,7 +128,7 @@ void DBShell::PrintOrdersP(Passenger* passenger)
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = " SELECT Orders.FromX, Orders.ToX, Orders.UnixTime, Drivers.Name, CarTypes.Type "
+	string query = " SELECT Orders.FromX, Orders.ToX, Orders.UnixTime, Drivers.Name, CarTypes.Type, Orders.ID "
 		" FROM Orders "
 		" INNER JOIN Drivers ON Orders.DriverID = Drivers.ID, "
 		" CarTypes ON Orders.CarTypeID = CarTypes.ID "
@@ -138,7 +138,8 @@ void DBShell::PrintOrdersP(Passenger* passenger)
 
 	while (sqlite3_step(stmt) != SQLITE_DONE) {
 		time_t temp = sqlite3_column_int(stmt, 2);
-		cout << "From: " << sqlite3_column_int(stmt, 0)
+		cout<< "ID: "<< sqlite3_column_int(stmt,5)
+			<< " From: " << sqlite3_column_int(stmt, 0)
 			<< " To:  " << sqlite3_column_int(stmt, 1)
 			<< " At : " << std::asctime(localtime(&temp))
 			<< " Driver: "<< sqlite3_column_text(stmt, 3)
@@ -232,6 +233,7 @@ int DBShell::GetPassengerCoordinates(Passenger* p) {
 	return x;
 }
 
+
 vector <Order*> DBShell::GetOrders(Driver* d)
 {
 	vector<Order*> orders;
@@ -239,7 +241,7 @@ vector <Order*> DBShell::GetOrders(Driver* d)
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = " SELECT Orders.ID, Passengers.Rating, Orders.FromX, Orders.ToX FROM Orders "
+	string query = " SELECT Orders.ID, Passengers.Rating, Orders.FromX, Orders.ToX, Orders.CarTypeID FROM Orders "
 		" INNER JOIN Passengers on Passengers.ID = Orders.PassengerID "
 		" WHERE Status = -1 and CarTypeID = " + to_string(getDriversCarType(d));
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
@@ -249,7 +251,8 @@ vector <Order*> DBShell::GetOrders(Driver* d)
 		orders.push_back(new Order(sqlite3_column_double(stmt, 0),
 			sqlite3_column_int(stmt, 1),
 			sqlite3_column_int(stmt, 2),
-			sqlite3_column_int(stmt, 3)));
+			sqlite3_column_int(stmt, 3),
+			((CarTypes)sqlite3_column_int(stmt, 4))));
 	}
 
 
@@ -357,6 +360,32 @@ void  DBShell::SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments)
 
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
+}
+
+Order* DBShell::GetOrderByID(int orderID)
+{
+	Order* order = NULL;
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT Orders.ID, Passengers.Rating, Orders.FromX, Orders.ToX, Orders.CarTypeID FROM Orders "
+		" INNER JOIN Passengers on Passengers.ID = Orders.PassengerID "
+		" WHERE Orders.ID = " + to_string(orderID);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) {
+
+		order= new Order(sqlite3_column_double(stmt, 0),
+			sqlite3_column_int(stmt, 1),
+			sqlite3_column_int(stmt, 2),
+			sqlite3_column_int(stmt, 3),
+			((CarTypes)sqlite3_column_int(stmt, 4)));
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return order;
 }
 
 void ClearPayments(Passenger* p) {

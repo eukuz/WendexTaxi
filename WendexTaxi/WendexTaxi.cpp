@@ -15,7 +15,7 @@ int main()
     PassengerGateway* pg = new PassengerGateway();
     dg->Login("Dave");
     pg->Login("Peter");
-    pg->PrintOrderHistory();
+    /*pg->PrintOrderHistory();
     
 
     pg->CheckRide(0, 10, Business);
@@ -24,7 +24,7 @@ int main()
     Driver* d = DBShell::findDriver(Economy);
     int from = 1, to = 7;
 
-    //pg->OrderRide(from, to, Economy);
+    pg->OrderRide(from, to, Economy);
 
     vector<Order*> av = dg->GetOrdersAvailable();
 
@@ -32,21 +32,21 @@ int main()
     dg->StartRide(av.at(0));
     for (int i = from; i <= to; i++)
     {
-      
         dg->Move(i);
-        //
         pg->WhereAmI();
-        //driver set finished ride (order)
     }
     
-    dg->FinishRide(av.at(0));
+    dg->FinishRide(av.at(0));*/
 
-    dg->PrintOrderHistory();
+    //dg->PrintOrderHistory();
+    
    
-    vector<PaymentMethod*> pays = pg->GetListOfMethodsAvailable();
+ /*   vector<PaymentMethod*> pays = pg->GetListOfMethodsAvailable();
 
-    pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0],&pays[2]));
+    pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0],&pays[2]));*/
 
+    pg->PrintOrderHistory();
+    int bill = pg->GetBill(2);
     
     
     

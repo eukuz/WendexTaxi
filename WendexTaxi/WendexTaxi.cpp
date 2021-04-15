@@ -43,6 +43,10 @@ int main()
 
     dg->PrintOrderHistory();
    
+    vector<PaymentMethod*> pays = pg->GetListOfMethodsAvailable();
+
+    pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0],&pays[2]));
+
     
     
     

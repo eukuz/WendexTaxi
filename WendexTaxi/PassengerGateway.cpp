@@ -34,3 +34,13 @@ void PassengerGateway::WhereAmI()
 	else
 		cout << this->passenger->Name << " is'nt at ride " << endl;
 }
+
+vector<PaymentMethod*> PassengerGateway::GetListOfMethodsAvailable()
+{
+	return DBShell::GetListOfPayments();
+}
+
+void PassengerGateway::UpdateMyListOfPaymentMethods(vector<PaymentMethod*> payments)
+{
+	DBShell::SetListOfPayments(this->passenger, payments);
+}

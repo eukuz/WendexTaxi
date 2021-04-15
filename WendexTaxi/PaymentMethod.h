@@ -6,5 +6,6 @@ class PaymentMethod
 public:
 	int ID;
 	string Method;
+	PaymentMethod(int id, string method) : ID(id), Method(method) {};
 };
 

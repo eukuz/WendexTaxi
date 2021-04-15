@@ -4,6 +4,7 @@
 #include "Car.h"
 #include "Enums.h"
 #include "Order.h"
+#include "PaymentMethod.h"
 #include <vector>
 using namespace std;
 class DBShell
@@ -22,5 +23,7 @@ public:
 	static void StartRide(Driver* d,Order* o);
 	static void UpdateDriverStatus(Driver* d, DriverStatus status);
 	static void FinishRide(Driver* d,Order* o);
+	static vector <PaymentMethod*> GetListOfPayments();
+	static void SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments);
 };
 

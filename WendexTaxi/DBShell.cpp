@@ -2,12 +2,14 @@
 #include "sqlite/sqlite3.h"
 #include <iostream>
 #include <vector>
+#include "PaymentMethod.h"
 
 #pragma warning(disable : 4996)
 using namespace std;
 const char* path = "WendexTaxiDB.db";
 
 int getDriversCarType(Driver* d);
+void ClearPayments(Passenger* p);
 
 Passenger* DBShell::getPassenger(string Name)
 {
@@ -315,6 +317,60 @@ void DBShell::FinishRide(Driver* d, Order* o)
 {
 	UpdateDriverStatus(d, NotRiding);
 	UpdateOrderStatus(d->ID, o, Finished);
+}
+
+vector<PaymentMethod*> DBShell::GetListOfPayments()
+{
+	vector <PaymentMethod*> payments;
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT * FROM PaymentMethods";
+
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	while (sqlite3_step(stmt) != SQLITE_DONE) {
+		payments.push_back(new PaymentMethod(sqlite3_column_int(stmt, 0),
+			string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)))));
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+	return payments;
+}
+
+void  DBShell::SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments)
+{
+	ClearPayments(p);
+
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "INSERT INTO PaymentsPassengers (PassengerID, PaymentID) VALUES";
+	for  (PaymentMethod* payment : payments)
+	{
+		query += "(" + to_string(p->ID) + ", " + to_string(payment->ID) + "),";
+	}
+	query.at(query.length() - 1) = ';';
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
+void ClearPayments(Passenger* p) {
+
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "DELETE FROM PaymentsPassengers WHERE PassengerID = "+to_string(p->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
 }
 
 int getDriversCarType(Driver* d) {

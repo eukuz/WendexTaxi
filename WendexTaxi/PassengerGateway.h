@@ -1,7 +1,9 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "Passenger.h"
 #include "Enums.h"
+#include "PaymentMethod.h"
 using namespace std;
 class PassengerGateway
 {
@@ -13,6 +15,8 @@ public:
 	void CheckRide(int from, int to, CarTypes type);
 	void OrderRide(int from, int to, CarTypes type); 
 	void WhereAmI();
+	vector<PaymentMethod*> GetListOfMethodsAvailable();
+	void UpdateMyListOfPaymentMethods(vector<PaymentMethod*> payments);
 };
 
 

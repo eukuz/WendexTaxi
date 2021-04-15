@@ -35,3 +35,8 @@ vector<Order*> DriverGateway::GetOrdersAvailable()
 {
 	return DBShell::GetOrders(this->driver);
 }
+
+void DriverGateway::SetStatus(DriverStatus status)
+{
+	DBShell::UpdateDriverStatus(this->driver, status);
+}

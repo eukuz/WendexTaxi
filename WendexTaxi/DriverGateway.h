@@ -3,6 +3,7 @@
 #include "Driver.h"
 #include "Order.h"
 #include "Car.h"
+#include "Enums.h"
 #include <vector>
 using namespace std;
 class DriverGateway
@@ -16,5 +17,6 @@ public:
 	void FinishRide(Order* order);
 	Car* GetMyCar();
 	vector<Order*> GetOrdersAvailable();
+	void SetStatus(DriverStatus status);
 };
 

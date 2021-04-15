@@ -53,6 +53,7 @@ int main()
 
     Car* car = dg->GetMyCar();
     
+    dg->SetStatus(NotWorking);
     
     cout << "!";
 }

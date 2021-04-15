@@ -23,4 +23,14 @@ void PassengerGateway::CheckRide(int from, int to, CarTypes type)
 void PassengerGateway::OrderRide(int from, int to, CarTypes type)
 {
 	DBShell::OrderRide(this->passenger, DBShell::findDriver(type), from, to, type);
+
+}
+
+void PassengerGateway::WhereAmI()
+{
+	int x = DBShell::GetPassengerCoordinates(this->passenger);
+	if (x != NULL)
+		cout << this->passenger->Name << " is at coordinates: " << x<< endl;
+	else
+		cout << this->passenger->Name << " is'nt at ride " << endl;
 }

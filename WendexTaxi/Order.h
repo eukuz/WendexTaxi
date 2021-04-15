@@ -5,11 +5,12 @@ class Order
 {
 public:
 	int ID;
-	int PassengerID;
-	int DriverID;
-	int CarTypeID;
+	int Rating;
 	int FromX;
 	int ToX;
-	int UnixTime;
+	
+
+	Order(int id, int rating,int fromx, int tox) :
+		ID(id), Rating(rating),FromX(fromx), ToX(tox){};
 };
 

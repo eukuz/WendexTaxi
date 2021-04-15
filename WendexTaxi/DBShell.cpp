@@ -1,11 +1,13 @@
 #include "DBShell.h"
 #include "sqlite/sqlite3.h"
 #include <iostream>
+#include <vector>
 
 #pragma warning(disable : 4996)
 using namespace std;
 const char* path = "WendexTaxiDB.db";
 
+int getDriversCarType(Driver* d);
 
 Passenger* DBShell::getPassenger(string Name)
 {
@@ -203,7 +205,75 @@ void DBShell::GetCar(string Number)
 	
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
-	//return c;
+}
+
+int DBShell::GetPassengerCoordinates(Passenger* p) {
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	char* er;
+	sqlite3_stmt* stmt;
+	string query = "Select Cars.X From Cars "
+		"INNER JOIN Drivers on Drivers.CarID = Cars.ID "
+		"INNER JOIN Orders on Orders.DriverID = Drivers.ID "
+		"Where Orders.Status = 0 AND Orders.PassengerID = " + to_string(p->ID);
+
+	int x = NULL;
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) 
+	{
+		x = sqlite3_column_int(stmt, 0);
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+	return x;
+}
+
+vector <Order*> DBShell::GetOrders(Driver* d)
+{
+	vector<Order*> orders;
+
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT Orders.ID, Passengers.Rating, Orders.FromX, Orders.ToX FROM Orders "
+		" INNER JOIN Passengers on Passengers.ID = Orders.PassengerID "
+		" WHERE Status = -1 and CarTypeID = " + to_string(getDriversCarType(d));
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	while (sqlite3_step(stmt) != SQLITE_DONE) {
+
+		orders.push_back(new Order(sqlite3_column_double(stmt, 0),
+			sqlite3_column_int(stmt, 1),
+			sqlite3_column_int(stmt, 2),
+			sqlite3_column_int(stmt, 3)));
+	}
+
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return orders;
+}
+
+int getDriversCarType(Driver* d) {
+	int carType = NULL;
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " Select CarTypeID from CarTypes INNER join Cars on CarTypes.ID = Cars.CarTypeID "
+		" INNER join Drivers on Cars.ID = Drivers.ID where Drivers.ID = " + to_string(d->ID);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	if (sqlite3_step(stmt) != SQLITE_DONE)
+		carType = sqlite3_column_int(stmt, 0);
+	else
+		cout << "Error get car type";
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+	return carType;
 }
 
 void DBShell::OrderRide(Passenger* p, Driver* d, int from, int to, CarTypes type)
@@ -217,15 +287,10 @@ void DBShell::OrderRide(Passenger* p, Driver* d, int from, int to, CarTypes type
 	" VALUES("+to_string(p->ID)+", "+ to_string(d->ID) +", "+ to_string(type) +", "+ to_string(from) 
 		+", "+ to_string(to) +", "+to_string(std::time(0))+");";
 
-	//exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
-	//if (exit != SQLITE_OK) {
-	//	cerr << "Error upd "<<endl;
-	//	sqlite3_free(er);
-	//}
-
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
 	sqlite3_step(stmt);
 
-	sqlite3_finalize(stmt);
+	
 	sqlite3_close(db);
+	sqlite3_finalize(stmt);
 }

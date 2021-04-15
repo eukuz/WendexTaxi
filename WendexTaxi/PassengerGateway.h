@@ -12,6 +12,7 @@ public:
 	//void AddPaymentMethod
 	void CheckRide(int from, int to, CarTypes type);
 	void OrderRide(int from, int to, CarTypes type); 
+	void WhereAmI();
 };
 
 

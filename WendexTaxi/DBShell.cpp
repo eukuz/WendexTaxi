@@ -15,6 +15,7 @@ void ClearAddresses(Passenger* p);
 bool CheckIsBlocked(Passenger* p);
 bool CheckIsBlocked(Driver* d);
 bool CheckIsValidated(int CarID);
+static int Callback(void*, int count, char** argv, char** columns);
 
 Passenger* DBShell::getPassenger(string Name)
 {
@@ -507,6 +508,33 @@ void DBShell::Validate(Car* car, bool validate)
 }
 
 
+void PrintAll(string tableName) {
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	cout <<"TABLE \""<< tableName<<"\" :"<<endl;
+	string query = " SELECT * FROM "+tableName;
+	sqlite3_exec(db, query.c_str(), Callback, NULL, NULL);
+
+	sqlite3_close(db);
+}
+
+void DBShell::ShowDB()
+{
+	PrintAll("Drivers");
+	PrintAll("Passangers");
+	PrintAll("Cars");
+	PrintAll("Orders");
+}
+static int Callback(void*,int count,char** argv, char** columns) {
+
+	for (int i = 0; i < count; i++)
+	{
+		cout << columns[i] << ": "<< (argv[i] == NULL? " ": argv[i]) << endl;
+	}
+	cout << endl;
+	return 0l;
+
+}
 void ClearPayments(Passenger* p) {
 
 	sqlite3* db;

@@ -75,15 +75,16 @@ int main()
 
   
     
+    //
+    //Car* car = dg->GetMyCar(); //get a car of a Driver
+
+    //ag->Validate(car,false);
+
+    //vector<Order*> av = dg->GetOrdersAvailable();
+
+    //dg->StartRide(av.at(0)); //accepting a ride by a driver
     
-    Car* car = dg->GetMyCar(); //get a car of a Driver
-
-    ag->Validate(car,false);
-
-    vector<Order*> av = dg->GetOrdersAvailable();
-
-    dg->StartRide(av.at(0)); //accepting a ride by a driver
-
+    ag->ShowDB();
     cout << "Finished!";
 }
 

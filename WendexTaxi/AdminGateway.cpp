@@ -20,3 +20,8 @@ void AdminGateway::Validate(Car* car, bool validate)
 {
 	DBShell::Validate(car,validate);
 }
+
+void AdminGateway::ShowDB()
+{
+	DBShell::ShowDB();
+}

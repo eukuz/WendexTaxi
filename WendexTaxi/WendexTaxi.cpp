@@ -68,7 +68,9 @@ int main()
     //cBusiness.ParkInFrontOfTheEntrance();
     //cComfort.ParkInFrontOfTheEntrance();
 
-    //
+    ag->Block(pg->passenger, true); //Block a passanger
+    ag->Block(dg->driver, true); //Block a driver
+
 
 
     cout << "Finished!";

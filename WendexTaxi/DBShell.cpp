@@ -454,6 +454,37 @@ Order* DBShell::GetOrderByID(int orderID)
 	return order;
 }
 
+void DBShell::Block(Driver* driver, bool block)
+{
+	sqlite3* db;
+	char* er;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "UPDATE Drivers SET IsBlocked = " + to_string((int)block) + " WHERE ID = " + to_string(driver->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
+void DBShell::Block(Passenger* passenger, bool block)
+{
+	sqlite3* db;
+	char* er;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "UPDATE Passengers SET IsBlocked = " + to_string((int)block) + " WHERE ID = " + to_string(passenger->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
+
 void ClearPayments(Passenger* p) {
 
 	sqlite3* db;

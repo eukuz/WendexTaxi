@@ -52,3 +52,13 @@ void PassengerGateway::UpdateMyListOfPaymentMethods(vector<PaymentMethod*> payme
 {
 	DBShell::SetListOfPayments(this->passenger, payments);
 }
+
+void PassengerGateway::UpdateMyListOfPinnedAddresses(vector<int> addresses) 
+{
+	DBShell::SetListOfPinnedAdresses(this->passenger, addresses);
+}
+
+vector<int> PassengerGateway::GetListOfPinnedAdresses()
+{
+	return DBShell::GetListOfPinnedAdresses(this->passenger);;
+}

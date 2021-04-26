@@ -18,6 +18,8 @@ public:
 	void WhereAmI();
 	vector<PaymentMethod*> GetListOfMethodsAvailable();
 	void UpdateMyListOfPaymentMethods(vector<PaymentMethod*> payments);
+	void UpdateMyListOfPinnedAddresses(vector<int> addresses);
+	vector<int> GetListOfPinnedAdresses();
 };
 
 

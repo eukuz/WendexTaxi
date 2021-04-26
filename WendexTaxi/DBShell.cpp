@@ -10,6 +10,7 @@ const char* path = "WendexTaxiDB.db";
 
 int getDriversCarType(Driver* d);
 void ClearPayments(Passenger* p);
+void ClearAddresses(Passenger* p);
 
 Passenger* DBShell::getPassenger(string Name)
 {
@@ -132,7 +133,8 @@ void DBShell::PrintOrdersP(Passenger* passenger)
 		" FROM Orders "
 		" INNER JOIN Drivers ON Orders.DriverID = Drivers.ID, "
 		" CarTypes ON Orders.CarTypeID = CarTypes.ID "
-		" WHERE Orders.PassengerID = " + to_string(passenger->ID);
+		" WHERE Orders.PassengerID = " + to_string(passenger->ID)+
+		" AND Orders.Status = 1";
 	cout << passenger->Name<<"'s orders:"<<endl;
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
@@ -322,6 +324,7 @@ void DBShell::FinishRide(Driver* d, Order* o)
 	UpdateOrderStatus(d->ID, o, Finished);
 }
 
+
 vector<PaymentMethod*> DBShell::GetListOfPayments()
 {
 	vector <PaymentMethod*> payments;
@@ -353,6 +356,44 @@ void  DBShell::SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments)
 	for  (PaymentMethod* payment : payments)
 	{
 		query += "(" + to_string(p->ID) + ", " + to_string(payment->ID) + "),";
+	}
+	query.at(query.length() - 1) = ';';
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
+vector<int> DBShell::GetListOfPinnedAdresses(Passenger* p)
+{
+	vector <int> addresses;
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT X FROM PinnedAddresses where PassengerID = "+to_string(p->ID);
+
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	while (sqlite3_step(stmt) != SQLITE_DONE) 
+		addresses.push_back(sqlite3_column_int(stmt, 0));
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+	return addresses;
+}
+
+void DBShell::SetListOfPinnedAdresses(Passenger* p, vector<int> addresses)
+{
+	ClearAddresses(p);
+
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "INSERT INTO PinnedAddresses (PassengerID, X) VALUES ";
+	for (int address : addresses)
+	{
+		query += "(" + to_string(p->ID) + ", " + to_string(address) + "),";
 	}
 	query.at(query.length() - 1) = ';';
 	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
@@ -401,6 +442,21 @@ void ClearPayments(Passenger* p) {
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
 }
+
+void ClearAddresses(Passenger* p) {
+
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "DELETE FROM PinnedAddresses WHERE PassengerID = " + to_string(p->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
 
 int getDriversCarType(Driver* d) {
 	int carType = NULL;

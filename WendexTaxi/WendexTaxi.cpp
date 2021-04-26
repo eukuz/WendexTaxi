@@ -47,14 +47,24 @@ int main()
 
     pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0],&pays[2]));*/
 
- /*   pg->PrintOrderHistory();
+ /*   pg->PrintOrderHistory(); //get the order history of a passanger and a bill
     int bill = pg->GetBill(2);
     */
 
-    Car* car = dg->GetMyCar();
-    
-    dg->SetStatus(NotWorking);
-    
-    cout << "!";
+    //Car* car = dg->GetMyCar(); //get a car of a Driver
+    //
+    //dg->SetStatus(NotWorking); //Set a status for a driver
+
+
+
+    //vector <int> adrs = pg->GetListOfPinnedAdresses(); //Get Update Pinned Addresses of a user
+    //adrs.push_back(13);
+    //adrs.push_back(28);
+    //pg->UpdateMyListOfPinnedAddresses(adrs);
+
+
+    pg->PrintOrderHistory();
+
+    cout << "Finished!";
 }
 

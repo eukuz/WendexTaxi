@@ -32,6 +32,6 @@ public:
 	static Order* GetOrderByID(int orderID);
 	static void Block(Driver* driver, bool block);
 	static void Block(Passenger* passenger, bool block);
-	static void Validate(Car* car, bool block);
+	static void Validate(Car* car, bool validate);
 };
 

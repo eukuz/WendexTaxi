@@ -68,12 +68,20 @@ int main()
     //cBusiness.ParkInFrontOfTheEntrance();
     //cComfort.ParkInFrontOfTheEntrance();
 
-    ag->Block(pg->passenger, true); //Block a passanger
-    ag->Block(dg->driver, true); //Block a driver
+    //ag->Block(pg->passenger, true); //Block a passanger
+    //ag->Block(dg->driver, true); //Block a driver
 
-    pg->OrderRide(1, 2, Business, 1);
+    //pg->OrderRide(1, 2, Business, 1);
+
+  
+    
+    
+    Car* car = dg->GetMyCar(); //get a car of a Driver
+
+    ag->Validate(car,false);
 
     vector<Order*> av = dg->GetOrdersAvailable();
+
     dg->StartRide(av.at(0)); //accepting a ride by a driver
 
     cout << "Finished!";

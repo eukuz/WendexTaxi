@@ -15,3 +15,8 @@ void AdminGateway::Block(Passenger* passenger, bool block)
 {
 	DBShell::Block(passenger, block);
 }
+
+void AdminGateway::Validate(Car* car, bool validate)
+{
+	DBShell::Validate(car,validate);
+}

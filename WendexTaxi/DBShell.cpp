@@ -14,6 +14,7 @@ void ClearPayments(Passenger* p);
 void ClearAddresses(Passenger* p);
 bool CheckIsBlocked(Passenger* p);
 bool CheckIsBlocked(Driver* d);
+bool CheckIsValidated(int CarID);
 
 Passenger* DBShell::getPassenger(string Name)
 {
@@ -342,7 +343,9 @@ void DBShell::UpdateDriverStatus(Driver* d, DriverStatus status) {
 void DBShell::StartRide(Driver* d, Order* o)
 {
 	if (CheckIsBlocked(d))
-		throw new exception("Passenger is blocked");
+		throw new exception("Driver is blocked");
+	if (!CheckIsValidated(d->CarID))
+		throw new exception("Car is not validated");
 	UpdateDriverStatus(d, IsRiding);
 	UpdateOrderStatus(d->ID, o, InProccess);
 }
@@ -488,6 +491,21 @@ void DBShell::Block(Passenger* passenger, bool block)
 	sqlite3_finalize(stmt);
 }
 
+void DBShell::Validate(Car* car, bool validate)
+{
+	sqlite3* db;
+	char* er;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "UPDATE Cars SET IsValidated = " + to_string((int)validate) + " WHERE ID = " + to_string(car->ID);
+
+	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
+	sqlite3_step(stmt);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+}
+
 
 void ClearPayments(Passenger* p) {
 
@@ -583,6 +601,21 @@ bool CheckIsBlocked(Driver* p) {
 	bool b = true;
 	if (sqlite3_step(stmt) != SQLITE_DONE) b = sqlite3_column_int(stmt, 0);
 	else throw new exception("Driver doesn't exist");
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return b;
+};
+bool CheckIsValidated(int CarID) {
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "SELECT IsValidated FROM Cars WHERE ID = " + to_string(CarID);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+	bool b = true;
+	if (sqlite3_step(stmt) != SQLITE_DONE) b = sqlite3_column_int(stmt, 0);
+	else throw new exception("Car doesn't exist");
 
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);

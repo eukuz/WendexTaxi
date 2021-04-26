@@ -31,7 +31,7 @@ int main()
     vector<Order*> av = dg->GetOrdersAvailable();
 
     dg->driver = d;
-    dg->StartRide(av.at(0));
+    dg->StartRide(av.at(0)); //accepting a ride by a driver
     for (int i = from; i <= to; i++)
     {
         dg->Move(i);
@@ -61,6 +61,12 @@ int main()
     //adrs.push_back(13);
     //adrs.push_back(28);
     //pg->UpdateMyListOfPinnedAddresses(adrs);
+
+    Car cBusiness = Car(-1, "a", Business, 1, "black", "12d");
+    Car cComfort = Car(-2, "b", Comfort, 1, "black", "12d");
+
+    cBusiness.ParkInFrontOfTheEntrance();
+    cComfort.ParkInFrontOfTheEntrance();
 
 
     pg->PrintOrderHistory();

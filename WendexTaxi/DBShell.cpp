@@ -15,6 +15,7 @@ void ClearAddresses(Passenger* p);
 bool CheckIsBlocked(Passenger* p);
 bool CheckIsBlocked(Driver* d);
 bool CheckIsValidated(int CarID);
+bool CheckIsInARide(Passenger* p);
 static int Callback(void*, int count, char** argv, char** columns);
 
 Passenger* DBShell::getPassenger(string Name)
@@ -32,10 +33,10 @@ Passenger* DBShell::getPassenger(string Name)
 			sqlite3_column_int(stmt, 0),
 			string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1))),
 			sqlite3_column_double(stmt, 2));
-		cout <<"Passenger "<< p->Name << " !" << endl;
+		cout << "Passenger " << p->Name << " !" << endl;
 	}
 	else {
-		cout << "There's no Passenger "<<p->Name << " in the system!" << endl;
+		cout << "There's no Passenger " << p->Name << " in the system!" << endl;
 	}
 
 	sqlite3_close(db);
@@ -62,7 +63,7 @@ Driver* DBShell::getDriver(string Name)
 			sqlite3_column_int(stmt, 3),
 			sqlite3_column_int(stmt, 4),
 			sqlite3_column_double(stmt, 5));
-		cout << "Driver "<<d->Name << " !" << endl;
+		cout << "Driver " << d->Name << " !" << endl;
 	}
 	else {
 		cout << "There's no Driver " << d->Name << " in the system!" << endl;
@@ -86,7 +87,7 @@ Admin* DBShell::getAdmin(string Name)
 	Admin* a = NULL;
 	if (sqlite3_step(stmt) != SQLITE_DONE)
 	{
-		a = new Admin(sqlite3_column_int(stmt, 0),Name);
+		a = new Admin(sqlite3_column_int(stmt, 0), Name);
 		cout << "Admin " << a->Name << " !" << endl;
 	}
 	else {
@@ -123,34 +124,23 @@ Driver* DBShell::findDriver(CarTypes type)
 	return d;
 }
 
-void DBShell::MoveDriver(Driver* driver,int x) //not working?? db's locked!!
+void DBShell::MoveDriver(Driver* driver, int x) //not working?? db's locked!!
 {
 	sqlite3* db;
 	char* er;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	
-	
-	string query = " UPDATE Cars SET X = '"+to_string(x)+"' WHERE ID = '"+ to_string(driver->CarID)+"'";
-	
+
+
+	string query = " UPDATE Cars SET X = '" + to_string(x) + "' WHERE ID = '" + to_string(driver->CarID) + "'";
+
 	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
 	sqlite3_step(stmt);
 
 	cout << driver->Name << " moved to X= " << x << endl;;
-		
+
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
-
-	/*exit = sqlite3_exec(db, query.c_str(), NULL, 0, &er);
-	if (exit != SQLITE_OK) {
-		cerr << "Error upd "<<endl;
-		sqlite3_free(er);
-	}else*/
-
-	//cout << driver->Name << " moved to X= " << x;
-	//
-	//sqlite3_close(db);
-	//GetCar("123");
 }
 
 void DBShell::PrintOrdersP(Passenger* passenger)
@@ -162,22 +152,22 @@ void DBShell::PrintOrdersP(Passenger* passenger)
 		" FROM Orders "
 		" INNER JOIN Drivers ON Orders.DriverID = Drivers.ID, "
 		" CarTypes ON Orders.CarTypeID = CarTypes.ID "
-		" WHERE Orders.PassengerID = " + to_string(passenger->ID)+
+		" WHERE Orders.PassengerID = " + to_string(passenger->ID) +
 		" AND Orders.Status = 1";
-	cout << passenger->Name<<"'s orders:"<<endl;
+	cout << passenger->Name << "'s orders:" << endl;
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
 	while (sqlite3_step(stmt) != SQLITE_DONE) {
 		time_t temp = sqlite3_column_int(stmt, 2);
-		cout<< "ID: "<< sqlite3_column_int(stmt,5)
+		cout << "ID: " << sqlite3_column_int(stmt, 5)
 			<< " From: " << sqlite3_column_int(stmt, 0)
 			<< " To:  " << sqlite3_column_int(stmt, 1)
 			<< " At : " << std::asctime(localtime(&temp))
-			<< " Driver: "<< sqlite3_column_text(stmt, 3)
-			<< " Car type: "<< sqlite3_column_text(stmt, 4)
+			<< " Driver: " << sqlite3_column_text(stmt, 3)
+			<< " Car type: " << sqlite3_column_text(stmt, 4)
 			<< endl;
 	}
-	
+
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
 
@@ -196,7 +186,7 @@ void DBShell::PrintOrdersD(Driver* driver)
 		" WHERE Orders.DriverID = " + to_string(driver->ID);
 	cout << driver->Name << "'s orders:" << endl;
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
-	
+
 	while (sqlite3_step(stmt) != SQLITE_DONE) {
 		time_t temp = sqlite3_column_int(stmt, 2);
 		cout << "From: " << sqlite3_column_int(stmt, 0)
@@ -209,9 +199,7 @@ void DBShell::PrintOrdersD(Driver* driver)
 
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
-
 }
-
 
 Car* DBShell::GetCar(int carId)
 {
@@ -235,7 +223,7 @@ Car* DBShell::GetCar(int carId)
 	else {
 		cout << "There's no Car with the id= " << carId << " in the system!" << endl;
 	}
-	
+
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
 	return c;
@@ -254,7 +242,7 @@ int DBShell::GetPassengerCoordinates(Passenger* p) {
 	int x = NULL;
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
 
-	if (sqlite3_step(stmt) != SQLITE_DONE) 
+	if (sqlite3_step(stmt) != SQLITE_DONE)
 	{
 		x = sqlite3_column_int(stmt, 0);
 	}
@@ -294,7 +282,7 @@ vector <Order*> DBShell::GetOrders(Driver* d)
 }
 
 
-void UpdateOrderStatus(int driverID, Order* o,OrderStatus status) {
+void UpdateOrderStatus(int driverID, Order* o, OrderStatus status) {
 	sqlite3* db;
 	char* er;
 	int exit = sqlite3_open(path, &db);
@@ -320,13 +308,13 @@ void DBShell::UpdateDriverStatus(Driver* d, DriverStatus status) {
 	switch (status)
 	{
 	case NotRiding:
-		query = "UPDATE Drivers Set IsRiding = 0 WHERE ID = "+to_string(d->ID);
+		query = "UPDATE Drivers Set IsRiding = 0 WHERE ID = " + to_string(d->ID);
 		break;
 	case IsRiding:
 		query = "UPDATE Drivers Set IsRiding = 1 WHERE ID = " + to_string(d->ID);
 		break;
 	case NotWorking:
-		query = "UPDATE Drivers Set IsWorking = 0 WHERE ID = "+to_string(d->ID);
+		query = "UPDATE Drivers Set IsWorking = 0 WHERE ID = " + to_string(d->ID);
 		break;
 	case IsWorking:
 		query = "UPDATE Drivers Set IsWorking = 1 WHERE ID = " + to_string(d->ID);
@@ -338,7 +326,7 @@ void DBShell::UpdateDriverStatus(Driver* d, DriverStatus status) {
 
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
-	
+
 }
 
 void DBShell::StartRide(Driver* d, Order* o)
@@ -386,7 +374,7 @@ void  DBShell::SetListOfPayments(Passenger* p, vector<PaymentMethod*> payments)
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
 	string query = "INSERT INTO PaymentsPassengers (PassengerID, PaymentID) VALUES";
-	for  (PaymentMethod* payment : payments)
+	for (PaymentMethod* payment : payments)
 	{
 		query += "(" + to_string(p->ID) + ", " + to_string(payment->ID) + "),";
 	}
@@ -404,11 +392,11 @@ vector<int> DBShell::GetListOfPinnedAdresses(Passenger* p)
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = " SELECT X FROM PinnedAddresses where PassengerID = "+to_string(p->ID);
+	string query = " SELECT X FROM PinnedAddresses where PassengerID = " + to_string(p->ID);
 
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
-	while (sqlite3_step(stmt) != SQLITE_DONE) 
+	while (sqlite3_step(stmt) != SQLITE_DONE)
 		addresses.push_back(sqlite3_column_int(stmt, 0));
 
 	sqlite3_close(db);
@@ -449,7 +437,7 @@ Order* DBShell::GetOrderByID(int orderID)
 
 	if (sqlite3_step(stmt) != SQLITE_DONE) {
 
-		order= new Order(sqlite3_column_double(stmt, 0),
+		order = new Order(sqlite3_column_double(stmt, 0),
 			sqlite3_column_int(stmt, 1),
 			sqlite3_column_int(stmt, 2),
 			sqlite3_column_int(stmt, 3),
@@ -511,8 +499,8 @@ void DBShell::Validate(Car* car, bool validate)
 void PrintAll(string tableName) {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
-	cout <<"TABLE \""<< tableName<<"\" :"<<endl;
-	string query = " SELECT * FROM "+tableName;
+	cout << "TABLE \"" << tableName << "\" :" << endl;
+	string query = " SELECT * FROM " + tableName;
 	sqlite3_exec(db, query.c_str(), Callback, NULL, NULL);
 
 	sqlite3_close(db);
@@ -525,11 +513,11 @@ void DBShell::ShowDB()
 	PrintAll("Cars");
 	PrintAll("Orders");
 }
-static int Callback(void*,int count,char** argv, char** columns) {
+static int Callback(void*, int count, char** argv, char** columns) {
 
 	for (int i = 0; i < count; i++)
 	{
-		cout << columns[i] << ": "<< (argv[i] == NULL? " ": argv[i]) << endl;
+		cout << columns[i] << ": " << (argv[i] == NULL ? " " : argv[i]) << endl;
 	}
 	cout << endl;
 	return 0l;
@@ -540,7 +528,7 @@ void ClearPayments(Passenger* p) {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = "DELETE FROM PaymentsPassengers WHERE PassengerID = "+to_string(p->ID);
+	string query = "DELETE FROM PaymentsPassengers WHERE PassengerID = " + to_string(p->ID);
 
 	sqlite3_prepare(db, query.c_str(), -1, &stmt, NULL);
 	sqlite3_step(stmt);
@@ -585,22 +573,24 @@ int getDriversCarType(Driver* d) {
 
 void DBShell::OrderRide(Passenger* p, int from, int to, CarTypes type)
 {
-	if (CheckIsBlocked(p)) 
-		throw new exception("Passenger is blocked");
-	
+	if (CheckIsBlocked(p))
+		throw new exception("Passenger is blocked"); 
+	if (CheckIsInARide(p))
+			throw new exception("Passenger is in a Ride already");
+
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	char* er;
 	sqlite3_stmt* stmt;
 	string query = "INSERT INTO Orders "
-	"('PassengerID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
-	" VALUES("+to_string(p->ID)+", "+ to_string(type) +", "+ to_string(from) 
-		+", "+ to_string(to) +", "+to_string(std::time(0))+");";
+		"('PassengerID', 'CarTypeID', 'FromX', 'ToX', 'UnixTime') "
+		" VALUES(" + to_string(p->ID) + ", " + to_string(type) + ", " + to_string(from)
+		+ ", " + to_string(to) + ", " + to_string(std::time(0)) + ");";
 
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
 	sqlite3_step(stmt);
 
-	
+
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
 }
@@ -609,7 +599,7 @@ bool CheckIsBlocked(Passenger* p) {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = "SELECT isBlocked FROM Passengers WHERE ID = "+to_string(p->ID);
+	string query = "SELECT isBlocked FROM Passengers WHERE ID = " + to_string(p->ID);
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 	bool b = true;
 	if (sqlite3_step(stmt) != SQLITE_DONE) b = sqlite3_column_int(stmt, 0);
@@ -620,7 +610,21 @@ bool CheckIsBlocked(Passenger* p) {
 
 	return b;
 };
-bool CheckIsBlocked(Driver* p) { 
+bool CheckIsInARide(Passenger* p) {
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT * FROM Orders WHERE Status = 0 and PassengerID =" + to_string(p->ID);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+	bool b = false;
+	if (sqlite3_step(stmt) != SQLITE_DONE) b = true;
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return b;
+};
+bool CheckIsBlocked(Driver* p) {
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;

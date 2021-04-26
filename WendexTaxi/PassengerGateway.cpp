@@ -22,7 +22,7 @@ int PassengerGateway::CheckRide(int from, int to, CarTypes type)
 	return price;
 }
 
-void PassengerGateway::OrderRide(int from, int to, CarTypes type)
+void PassengerGateway::OrderRide(int from, int to, CarTypes type, int paymentMethod)
 {
 	DBShell::OrderRide(this->passenger, from, to, type);
 

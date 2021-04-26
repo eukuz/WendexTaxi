@@ -13,7 +13,7 @@ public:
 	Passenger* passenger;
 	void PrintOrderHistory();
 	static int CheckRide(int from, int to, CarTypes type);
-	void OrderRide(int from, int to, CarTypes type); 
+	void OrderRide(int from, int to, CarTypes type, int paymentMethod); 
 	int GetBill(int OrderID); 
 	void WhereAmI();
 	vector<PaymentMethod*> GetListOfMethodsAvailable();

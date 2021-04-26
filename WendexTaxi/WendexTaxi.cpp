@@ -71,7 +71,10 @@ int main()
     ag->Block(pg->passenger, true); //Block a passanger
     ag->Block(dg->driver, true); //Block a driver
 
+    pg->OrderRide(1, 2, Business, 1);
 
+    vector<Order*> av = dg->GetOrdersAvailable();
+    dg->StartRide(av.at(0)); //accepting a ride by a driver
 
     cout << "Finished!";
 }

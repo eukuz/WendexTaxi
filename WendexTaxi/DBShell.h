@@ -1,6 +1,7 @@
 #pragma once
 #include "Passenger.h"
 #include "Driver.h"
+#include "Admin.h"
 #include "Car.h"
 #include "Enums.h"
 #include "Order.h"
@@ -12,6 +13,7 @@ class DBShell
 public:
 	static Passenger* getPassenger(string Name);
 	static Driver* getDriver(string Name);
+	static Admin* getAdmin(string Name);
 	static Driver* findDriver(CarTypes type);
 	static void MoveDriver(Driver* driver, int x);
 	static void PrintOrdersP(Passenger* passenger);

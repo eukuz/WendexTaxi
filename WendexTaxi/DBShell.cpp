@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "PaymentMethod.h"
+#include "Admin.h"
 
 #pragma warning(disable : 4996)
 using namespace std;
@@ -68,6 +69,30 @@ Driver* DBShell::getDriver(string Name)
 
 
 	return d;
+}
+
+Admin* DBShell::getAdmin(string Name)
+{
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = "SELECT * FROM Admins WHERE Name = '" + Name + "'";
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	Admin* a = NULL;
+	if (sqlite3_step(stmt) != SQLITE_DONE)
+	{
+		a = new Admin(sqlite3_column_int(stmt, 0),Name);
+		cout << "Admin " << a->Name << " !" << endl;
+	}
+	else {
+		cout << "There's no Admin " << a->Name << " in the system!" << endl;
+	}
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return a;
 }
 
 Driver* DBShell::findDriver(CarTypes type)

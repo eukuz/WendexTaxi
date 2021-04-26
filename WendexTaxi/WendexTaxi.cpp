@@ -5,6 +5,7 @@
 #include "DBShell.h"
 #include "DriverGateway.h"
 #include "PassengerGateway.h"
+#include "AdminGateway.h"
 #include "Enums.h"
 
 
@@ -13,9 +14,12 @@ int main()
 
     DriverGateway* dg = new DriverGateway();
     PassengerGateway* pg = new PassengerGateway();
+    AdminGateway* ag = new AdminGateway();
     dg->Login("Dave"); //Login in the system as a Driver
     pg->Login("Peter");//Login in the system as a Passenger
+    ag->Login("Amelie"); //Login in the system as a Passenger
     
+    /*
     pg->PrintOrderHistory();
 
     pg->CheckRide(0, 10, Business);  // Checking a ride
@@ -65,7 +69,9 @@ int main()
     cBusiness.ParkInFrontOfTheEntrance();
     cComfort.ParkInFrontOfTheEntrance();
 
-    
+    */
+
+
     cout << "Finished!";
 }
 

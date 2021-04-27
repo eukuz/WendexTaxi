@@ -14,7 +14,6 @@ public:
 	void Block(Passenger* passenger, bool block);
 	void Validate(Car* car, bool validate);
 	void ShowDB();
-	
 
 };
 

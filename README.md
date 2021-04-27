@@ -1,5 +1,5 @@
 # Introduction to Programming 2
-## Assignment #1
+## WendexTaxi backend
 ### Eugene Kuzyakhmetov
 
 #### How to set up?
@@ -11,13 +11,19 @@
 
 #### How does it work?
 
+For DB used SQLite3
+
 There are 3 types of gateways:
 * Passenger
 * Driver
 * Admin
 Users of corresponding types communicate with the system through them.
 	
-There  are  4  car  types:  Economy,  Comfort, ComfortPlus, Business.
+There  are  4  car  types:  
+1. Economy
+2. Comfort(have water bottles that randomly dearease during rides)
+3. ComfortPlus
+4. Business (can park in from of the entrance).
 
 A Passenger can:
 * login (via their name)

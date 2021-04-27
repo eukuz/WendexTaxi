@@ -8,10 +8,8 @@
 #include "AdminGateway.h"
 #include "Enums.h"
 
-
 int main()
 {
-
 	DriverGateway* dg = new DriverGateway();
 	PassengerGateway* pg = new PassengerGateway();
 	AdminGateway* ag = new AdminGateway();
@@ -45,7 +43,7 @@ int main()
 
 
 	pg->PrintOrderHistory(); //get the order history of a passanger and a bill
-	int bill = pg->GetBill(2);
+	int bill = pg->GetBill(10);
 
 	vector<PaymentMethod*> pays = pg->GetListOfMethodsAvailable(); //get & update the list of payment methods
 	pg->UpdateMyListOfPaymentMethods(vector<PaymentMethod*>(&pays[0], &pays[2]));
@@ -54,8 +52,6 @@ int main()
 	Car* car = dg->GetMyCar(); //get a car of a Driver
 
 	dg->SetStatus(NotWorking); //Set a status for a driver
-
-
 
 	vector <int> adrs = pg->GetListOfPinnedAdresses(); //Get Update Pinned Addresses of a user
 	adrs.push_back(42);
@@ -71,18 +67,15 @@ int main()
 	ag->Block(pg->passenger, true); //Block a passanger
 	ag->Block(dg->driver, true); //Block a driver
 
-	pg->OrderRide(1, 2, Business, 1);
-
-
-
+	pg->OrderRide(1, 2, Business, 1); ////will cause an execption because the passenger is blocked 
 
 	car = dg->GetMyCar(); //get a car of a Driver
 
-	ag->Validate(car, false);
+	ag->Validate(car, false); //validate or unvalidate a car
 
 	av = dg->GetOrdersAvailable();
 
-	dg->StartRide(av.at(0)); //accepting a ride by a driver
+	dg->StartRide(av.at(0)); //will cause an execption because the driver is blocked and their car is unvalidated 
 
 	ag->ShowDB();
 	cout << "Finished!";

@@ -5,6 +5,7 @@
 #include "PaymentMethod.h"
 #include "Admin.h"
 
+
 #pragma warning(disable : 4996)
 using namespace std;
 const char* path = "WendexTaxiDB.db";
@@ -105,7 +106,9 @@ Driver* DBShell::findDriver(CarTypes type)
 	sqlite3* db;
 	int exit = sqlite3_open(path, &db);
 	sqlite3_stmt* stmt;
-	string query = " Select Drivers.Name FROM Drivers INNER JOIN Cars on Drivers.CarID = Cars.ID where Cars.CarTypeID = " + to_string(type);
+	string query = " SELECT Drivers.Name FROM Drivers INNER JOIN Cars on Drivers.CarID = Cars.ID WHERE"
+		" isWorking = 1 AND isRiding = 0 AND isBlocked = 0 AND"
+		" Cars.CarTypeID = " + to_string(type);
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 
 	Driver* d = NULL;
@@ -114,7 +117,7 @@ Driver* DBShell::findDriver(CarTypes type)
 		d = getDriver(string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0))));
 	}
 	else {
-		cout << "There's no such a type od car now" << d->Name << " in the system!" << endl;
+		cout << "There's no such a type of car now available in the system, please wait or change the type!" << endl;
 	}
 
 	sqlite3_close(db);
@@ -124,7 +127,46 @@ Driver* DBShell::findDriver(CarTypes type)
 	return d;
 }
 
-void DBShell::MoveDriver(Driver* driver, int x) //not working?? db's locked!!
+int getNumberOfWaterBottles(int carID) {
+	int nBottels = -1;
+	sqlite3* db;
+	int exit = sqlite3_open(path, &db);
+	sqlite3_stmt* stmt;
+	string query = " SELECT WaterBottles FROM Cars WHERE CarTypeID = 2 AND ID = "+to_string(carID);
+	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+	if (sqlite3_step(stmt) != SQLITE_DONE) nBottels = sqlite3_column_int(stmt, 0);
+
+	sqlite3_close(db);
+	sqlite3_finalize(stmt);
+
+	return nBottels;
+};
+void updateNumberOfWaterBottles(int carID) {
+	int n = getNumberOfWaterBottles(carID);
+	if (n > 1) {
+
+		bool decrease = !(bool)(rand() % 100); // 1/100 chance to decrease
+		if (decrease)
+		{
+			sqlite3* db;
+			int exit = sqlite3_open(path, &db);
+			sqlite3_stmt* stmt;
+			string query = "UPDATE Cars SET WaterBottles = " + to_string(--n)
+				+ " WHERE CarTypeID = 2 AND ID = " + to_string(carID);
+			sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
+
+			if (sqlite3_step(stmt) == SQLITE_DONE)
+				cout << "Water bottles left in this car: " + to_string(n)<<endl;
+
+			sqlite3_close(db);
+			sqlite3_finalize(stmt);
+		}
+	}
+
+};
+
+void DBShell::MoveDriver(Driver* driver, int x) 
 {
 	sqlite3* db;
 	char* er;
@@ -141,6 +183,7 @@ void DBShell::MoveDriver(Driver* driver, int x) //not working?? db's locked!!
 
 	sqlite3_close(db);
 	sqlite3_finalize(stmt);
+	updateNumberOfWaterBottles(driver->CarID);
 }
 
 void DBShell::PrintOrdersP(Passenger* passenger)
@@ -183,7 +226,8 @@ void DBShell::PrintOrdersD(Driver* driver)
 		" INNER JOIN Drivers ON Orders.DriverID = Drivers.ID, "
 		" CarTypes ON Orders.CarTypeID = CarTypes.ID,  "
 		" Passengers ON Orders.PassengerId = Passengers.ID"
-		" WHERE Orders.DriverID = " + to_string(driver->ID);
+		" WHERE Orders.DriverID = " + to_string(driver->ID) +
+		" AND Orders.Status = 1";
 	cout << driver->Name << "'s orders:" << endl;
 	sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, 0);
 

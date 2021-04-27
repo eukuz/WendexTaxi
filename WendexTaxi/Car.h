@@ -6,9 +6,6 @@ using namespace std;
 
 class Car
 {
-private:
-    int WaterBottels;
-
 public:
 	int ID;
 	string Model;
